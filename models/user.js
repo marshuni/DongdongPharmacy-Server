@@ -1,11 +1,19 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
+const addressSchema = new Schema({
+    _id: false,
+    address: String,
+    recipient: String,
+    contact: String
+});
+
 var ObjectId = mongoose.Schema.ObjectId
 const userSchema = new mongoose.Schema({
-    userid : ObjectId,
+    _id : ObjectId,
     username: { type:String, unique:true },
     password: String
+    
 });
 
 userSchema.pre('save', function(next) {

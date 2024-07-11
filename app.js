@@ -16,6 +16,9 @@ app.use(session({
 const flash = require('connect-flash');
 app.use(flash());
 
+const cors = require('cors');
+app.use(cors())
+
 const passport = require('./config/passport'); // 引入 Passport 配置模块
 app.use(passport.initialize());
 app.use(passport.session());
