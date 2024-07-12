@@ -5,19 +5,135 @@ const router = express.Router();
 var User = require('./../models/user');
 
 
-// middleware that is specific to this router
-router.use(function timeLog(req, res, next) {
-    console.log('Time: ', Date.now());
-    next();
+// 获取用户的地址列表
+router.get('/addresses', async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+
+        res.status(200).json({
+            status: '10000',
+            message: '请求成功',
+            address: user.address
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            status: '10099',
+            message: 'Internal Server Error'
+        });
+    }
 });
-// define the home page route
-router.get('/', function (req, res) {
-    res.send('Users home page');
+
+// 添加新地址
+router.post('/addresses', async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+
+        if (!req.body.address) return res.status(404).json({
+            status: '10022',
+            message: '请求为空，请检查请求内容'
+        });
+        // console.log(req.body)
+        user.address.push(req.body.address);
+        await user.save()
+            .then(savedDocument => {
+                return res.status(200).json({
+                    status: '10000',
+                    message: '添加成功',
+                    address: user.address
+                });
+            })
+            .catch(err => {
+                console.log(err)
+                return res.status(400).json({
+                    status: '10022',
+                    message: '请求有误，请检查请求内容'
+                });
+            });
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            status: '10099',
+            message: 'Internal Server Error'
+        });
+    }
 });
-// define the about route
-router.get('/about', function (req, res) {
-    res.send('About users');
+
+// 更新地址
+router.put('/addresses', async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        console.log(req.query)
+        const address = user.address.id(req.query.addressId);
+        if (!address)
+            return res.status(404).json({
+                status: '10023',
+                message: '未找到该地址，请检查请求内容'
+            });
+        
+        Object.assign(address, req.body.address);
+        await user.save()
+            .then(savedDocument => {
+                return res.status(200).json({
+                    status: '10000',
+                    message: '修改成功',
+                    address: user.address
+                });
+            })
+            .catch(err => {
+                console.log(err)
+                return res.status(400).json({
+                    status: '10022',
+                    message: '请求有误，请检查请求内容'
+                });
+            });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            status: '10099',
+            message: 'Internal Server Error'
+        });
+    }
 });
+
+// 删除地址
+router.delete('/addresses', async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+
+        const address = user.address.id(req.query.addressId);
+        if (!address)
+            return res.status(404).json({
+                status: '10023',
+                message: '未找到该地址，请检查请求内容'
+            });
+        
+        user.address.remove(address)
+        await user.save()
+            .then(savedDocument => {
+                return res.status(200).json({
+                    status: '10000',
+                    message: '删除成功',
+                    address: user.address
+                });
+            })
+            .catch(err => {
+                console.log(err)
+                return res.status(400).json({
+                    status: '10022',
+                    message: '请求有误，请检查请求内容'
+                });
+            });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            status: '10099',
+            message: 'Internal Server Error'
+        });
+    }
+});
+
 
 module.exports = router;
 

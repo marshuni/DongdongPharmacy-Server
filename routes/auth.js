@@ -4,6 +4,10 @@ const User = require('../models/user');
 
 const passport = require('../config/passport'); // 引入 Passport 配置模块
 
+
+router.use(passport.initialize());
+router.use(passport.session());
+
 // 用户登录操作
 router.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user) => {
@@ -54,8 +58,6 @@ router.post('/register', (req, res) => {
 
 
 // 用户登出
-router.use(passport.initialize());
-router.use(passport.session());
 router.get('/logout', function (req, res) {
     req.logout(err => {
         if (err) {
