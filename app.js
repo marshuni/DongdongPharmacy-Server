@@ -25,6 +25,9 @@ app.use(passport.session());
 // 引入路由模块
 var authRouter = require('./routes/auth');
 var user = require('./routes/user');
+
+var manageOrder = require('./routes/manageOrder');
+
 // 连接数据库
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/Dongdong')
@@ -53,6 +56,8 @@ app.all('/*', function (req, res, next) {
 // 交由各个模块处理请求
 app.use('/auth', authRouter);
 app.use('/user', user);
+
+app.use('/order', manageOrder);
 
 
 // 启动服务器
