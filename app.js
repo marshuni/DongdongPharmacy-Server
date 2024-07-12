@@ -27,7 +27,7 @@ app.use(passport.session());
 // ========================
 // 引入路由模块
 var authRouter = require('./routes/auth');
-var user = require('./routes/user');
+var userRouter = require('./routes/user');
 // 连接数据库
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/Dongdong')
@@ -46,16 +46,16 @@ app.all('/*', function (req, res, next) {
     ) {
       next();
     } else {
-      res.json({
+      res.status(403).json({
         status: '10010',
-        msg: '当前未登录',
+        message: '当前未登录',
       });
     }
   }
 });
 // 交由各个模块处理请求
 app.use('/auth', authRouter);
-app.use('/user', user);
+app.use('/user', userRouter);
 
 
 // 启动服务器
