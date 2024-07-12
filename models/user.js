@@ -1,22 +1,28 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
 
+
+const cartItemSchema = new Schema({
+    medicine_id: { type: Schema.Types.ObjectId, ref: 'Medicine', required: true },
+    price: { type: Number, required: true },
+    amount: { type: Number, required: true }
+});
+
 const addressSchema = new Schema({
-    _id: false,
-    address: String,
-    recipient: String,
-    contact: String
+    location: { type: String, required: true },
+    recipient: { type: String, required: true },
+    contact: { type: String, required: true }
 });
 
-var ObjectId = mongoose.Schema.ObjectId
-const userSchema = new mongoose.Schema({
-    _id : ObjectId,
-    username: { type:String, unique:true },
-    password: String
-    
+const userSchema = new Schema({
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    cart: [cartItemSchema],
+    address: [addressSchema]
 });
 
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function (next) {
     const user = this;
 
     if (!user.isModified('password')) {
@@ -37,4 +43,4 @@ userSchema.pre('save', function(next) {
     });
 });
 
-module.exports = mongoose.model("User",userSchema);
+module.exports = mongoose.model("User", userSchema);
