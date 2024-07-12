@@ -9,7 +9,7 @@ const cartItemSchema = new Schema({
 
 const orderSchema = new Schema({
   userid: { type: Schema.Types.ObjectId, /* ref: 'User', */ required: true },
-  status: { type: String, required: true },
+  status: { type: String, default : "Pending", required: true },
   time: { type: Date, required: true },
   delivery: { type: String, required: true },
   payment: { type: Number, required: true },

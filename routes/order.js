@@ -27,12 +27,12 @@ router.post('/create', async (req, res) => {
         });
 
         // 保存订单到数据库
-        await newOrder.save().then(savedDocument => {
-            console.log('Order saved:', savedDocument);
-            return res.status(201).json({message:'Order Created Successfully', orderId : newOrder.orderId});
-        });
+        const newSave = await newOrder.save();
+        console.log("订单成功保存到数据库", newSave._id);
+        return res.status(201).json({message:'订单创建成功', orderid : newSave._id});
+
     } catch (error) {
-        return res.status(500).json({ message: "Falied to create order", error : error.message});
+        return res.status(500).json({ message: "订创建失败", error : error.message});
     }
 });
 
@@ -41,18 +41,43 @@ router.post('/create', async (req, res) => {
 router.get('/view', async (req, res) => {
     try {
         // 获得订单的ID
-        const orderId = req.query.orderId;
-        console.log("orderId", orderId);
+        const order_id = req.query.order_id;
+        console.log("订单ID: ", order_id);
 
         // 通过订单ID在数据库中查找订单
-        const order = await Order.findById(orderId);
+        const order = await Order.findById(order_id);
+
         if (!order) {
-            return res.status(404).json({ message: "Order not found" });
+            return res.status(404).json({ status : "10023", message: "查找不到订单" });
         }
         return res.status(200).json(order);
     } catch (error) {
-        return res.status(500).json({ message: "Failed to view order", error: error.message });
+        return res.status(500).json({ message: "查找订单失败", error: error.message });
     }
 });
+
+// 更新订单状态
+router.get('/status', async (req, res) => {
+    try {
+        const order_id = req.query.order_id;
+        const status = req.query.status;
+
+        const order = await Order.findById(order_id);
+        if (!order) {
+            return res.status(404).json({status : "10023", message : "查找不到订单"});
+        }
+
+        // 通过ID更新状态
+        const updatedOrder = await Order.findByIdAndUpdate(
+            order_id,
+            { status: status },
+            { new: true, runValidators: true }
+        );
+        return res.status(200).json({message:"更新状态成功", new_status:status});
+        
+    } catch(error) {
+        return res.status(500).json({message: "更新订单状态失败", error : error.message});
+    }
+}) 
 
 module.exports = router;
