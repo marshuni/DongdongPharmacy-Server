@@ -9,16 +9,16 @@ const reviewSchema = new Schema({
 });
 
 const imageSchema = new Schema({
-    name: String,
-    data: Buffer,
-    contentType: String
+  data: Buffer,
+  contentType: String
 });
 
 const medicineSchema = new Schema({
-  name: { type: String, required: true },
+  name: { type: String, required: true, unique: true },
   type: { type: String, required: true },
   price: { type: Number, required: true },
   picture: { type: imageSchema },
+  picture_url: String,
   reviews: [reviewSchema]
 });
 
