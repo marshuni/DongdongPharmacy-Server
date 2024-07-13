@@ -40,6 +40,7 @@ var authRouter = require('./routes/auth');
 var orderRouter = require('./routes/order');
 var userRouter = require('./routes/user');
 var medicineRouter = require('./routes/medicine');
+var reviewRouter = require("./routes/review");
 // 连接数据库
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/Dongdong')
@@ -74,6 +75,7 @@ app.use('/user', userRouter);
 app.use('/order', orderRouter);
 
 app.use('/medicine', medicineRouter);
+app.use('/review', reviewRouter);
 
 // 启动服务器
 // ========================

@@ -52,7 +52,7 @@ router.get('/view', async (req, res) => {
         }
         return res.status(200).json(order);
     } catch (error) {
-        return res.status(500).json({ message: "查找订单失败", error: error.message });
+        return res.status(500).json({status : "10022", message: "查找订单失败", error: error.message });
     }
 });
 
@@ -73,10 +73,10 @@ router.put('/status', async (req, res) => {
             { status: status },
             { new: true, runValidators: true }
         );
-        return res.status(200).json({message:"更新状态成功", new_status:status});
+        return res.status(200).json({status : "10000", message:"更新状态成功", new_status:status});
         
     } catch(error) {
-        return res.status(500).json({message: "更新订单状态失败", error : error.message});
+        return res.status(500).json({status:"10022", message: "更新订单状态失败", error : error.message});
     }
 }) 
 
@@ -123,7 +123,7 @@ router.delete('/delete', async (req, res) => {
         const order_id = req.query.order_id;
         const order = await Order.findById(order_id);
         if (!order) {
-            return res.status(404).json({status:10023, message:"订单不存在"})
+            return res.status(404).json({status:"10023", message:"订单不存在"})
         }
         await Order.findByIdAndDelete(order_id);
         return res.status(200).json({status:"10000", message : "删除成功"});
