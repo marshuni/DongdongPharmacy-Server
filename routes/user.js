@@ -86,7 +86,7 @@ router.put('/addresses', async (req, res) => {
                 status: '10023',
                 message: '未找到该地址，请检查请求内容'
             });
-        
+
         Object.assign(address, req.body.address);
         await user.save()
             .then(savedDocument => {
@@ -123,7 +123,7 @@ router.delete('/addresses', async (req, res) => {
                 status: '10023',
                 message: '未找到该地址，请检查请求内容'
             });
-        
+
         user.address.remove(address)
         await user.save()
             .then(savedDocument => {
