@@ -51,7 +51,11 @@ router.get('/view', async (req, res) => {
         if (!order) {
             return res.status(404).json({ status : "10023", message: "查找不到订单" });
         }
-        return res.status(200).json(order);
+        return res.status(200).json({
+            status:'10000',
+            message:'请求成功',
+            order:order
+        });
     } catch (error) {
         return res.status(500).json({status : "10022", message: "查找订单失败", error: error.message });
     }
@@ -94,7 +98,11 @@ router.get('/user-all', async (req, res) => {
         });
             
         console.log("user_id: ", req.user.id);
-        return res.status(200).json(orders);
+        return res.status(200).json({
+            status:'10000',
+            message:'请求成功',
+            orders:orders
+        });
     } catch(error) {
         console.log("获取订单失败");
         return res.status(500).json({status:"10099", message:"获取订单失败"});
@@ -111,7 +119,11 @@ router.get('/admin-all', async (req, res) => {
         else {
             orders = await Order.find({status:req.query.status});
         }
-        return res.status(200).json(orders);
+        return res.status(200).json({
+            status:'10000',
+            message:'请求成功',
+            orders:orders
+        });
     } catch(error) {
         console.log("获取订单失败");
         return res.status(500).json({status:"10099", message:"获取订单失败", error : error.message});
