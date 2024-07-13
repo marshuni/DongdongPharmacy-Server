@@ -5,7 +5,7 @@ const router = express.Router();
 var User = require('./../models/user');
 
 
-// 获取用户的地址列表
+// 获取用户的物流地址列表
 router.get('/addresses', async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
@@ -29,7 +29,7 @@ router.post('/addresses', async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
 
-        if (!req.body.address) return res.status(404).json({
+        if (!req.body.address) return res.status(400).json({
             status: '10022',
             message: '请求为空，请检查请求内容'
         });
