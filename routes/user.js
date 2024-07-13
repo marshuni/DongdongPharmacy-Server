@@ -5,6 +5,18 @@ const router = express.Router();
 var User = require('./../models/user');
 
 
+// 拦截权限错误请求
+router.all('/*', function (req, res, next) {
+    if (req.user.role === 'user') {
+        next();
+    } else {
+        res.status(403).json({
+            status: '10013',
+            message: '用户专用接口，请以用户身份登录！',
+        });
+    }
+});
+
 // 获取用户的物流地址列表
 router.get('/addresses', async (req, res) => {
     try {
@@ -71,7 +83,7 @@ router.put('/addresses', async (req, res) => {
                 status: '10023',
                 message: '未找到该地址，请检查请求内容'
             });
-        
+
         Object.assign(address, req.body.address);
         await user.save()
             .then(savedDocument => {
@@ -108,7 +120,7 @@ router.delete('/addresses', async (req, res) => {
                 status: '10023',
                 message: '未找到该地址，请检查请求内容'
             });
-        
+
         user.address.remove(address)
         await user.save()
             .then(savedDocument => {
