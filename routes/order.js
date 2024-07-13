@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 // 创建新订单
 router.post('/create', async (req, res) => {
     try {
-        const { userid, status, delivery, payment, goods } = req.body;
+        const { username, status, delivery, payment, goods } = req.body;
 
         // 创建购物车项目数组
         const cartItems = goods.map(item => new CartItem({
@@ -18,7 +18,8 @@ router.post('/create', async (req, res) => {
 
         // 创建新订单
         const newOrder = new Order({
-            userid: userid,
+            userid: req.user.id,
+            username:username,
             status: status,
             time: new Date(), 
             delivery: delivery,
@@ -32,7 +33,7 @@ router.post('/create', async (req, res) => {
         return res.status(201).json({message:'订单创建成功', orderid : newSave._id});
 
     } catch (error) {
-        return res.status(500).json({ message: "订创建失败", error : error.message});
+        return res.status(500).json({ message: "订单创建失败", error : error.message});
     }
 });
 
