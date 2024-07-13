@@ -132,4 +132,28 @@ router.delete('/delete', async (req, res) => {
     }
 });
 
+// 更新订单状态
+router.get('/status', async (req, res) => {
+    try {
+        const order_id = req.query.order_id;
+        const status = req.query.status;
+
+        const order = await Order.findById(order_id);
+        if (!order) {
+            return res.status(404).json({status : "10023", message : "查找不到订单"});
+        }
+
+        // 通过ID更新状态
+        const updatedOrder = await Order.findByIdAndUpdate(
+            order_id,
+            { status: status },
+            { new: true, runValidators: true }
+        );
+        return res.status(200).json({message:"更新状态成功", new_status:status});
+        
+    } catch(error) {
+        return res.status(500).json({message: "更新订单状态失败", error : error.message});
+    }
+}) 
+
 module.exports = router;
