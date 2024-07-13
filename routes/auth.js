@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const Admin = require('../models/admin');
 
 const passport = require('../config/passport'); // 引入 Passport 配置模块
 
@@ -10,7 +11,7 @@ router.use(passport.session());
 
 // 用户登录操作
 router.post('/login', (req, res, next) => {
-    passport.authenticate('local', (err, user) => {
+    passport.authenticate('user', (err, user) => {
         if (err) {
             console.log(err)
             return res.status(500).json({ status: '10099', message: 'Internal server error' });
@@ -38,7 +39,8 @@ router.post('/register', (req, res) => {
         // 创建新用户
         const newUser = new User({
             username: username,
-            password: password
+            password: password,
+            role: 'user'
         });
         newUser.save()
             .then(savedDocument => {
@@ -66,5 +68,57 @@ router.get('/logout', function (req, res) {
         return res.status(200).json({ status: '10000', message: 'Logout successful' });
     }); // 用户登出
 });
+
+
+// 管理员登录操作
+router.post('/admin', (req, res, next) => {
+    passport.authenticate('admin', (err, user) => {
+        if (err) {
+            console.log(err)
+            return res.status(500).json({ status: '10099', message: 'Internal server error' });
+        }
+        if (!user) {
+            return res.status(401).json({ status: '10011', message: 'Invalid username or password' });
+        }
+        req.login(user, (err) => {
+            if (err) {
+                return res.status(500).json({ status: '10099', message: 'Failed to serialize user into session' });
+            }
+            return res.status(200).json({ status: '10000', message: 'Login successful' });
+        });
+    })(req, res, next);
+});
+
+// 管理员注册
+// 内部调试用接口，请勿开放！！
+router.post('/admin/register', (req, res) => {
+    const { username, password } = req.body;
+    // 检查用户名是否已经被注册
+    Admin.findOne({ 'username': username }).then(existingUser => {
+        if (existingUser) {
+            return res.status(400).json({ status: '10012', message: 'Username already exists' });
+        }
+        // 创建新用户
+        const newAdmin = new Admin({
+            username: username,
+            password: password,
+            role: 'admin'
+        });
+        newAdmin.save()
+            .then(savedDocument => {
+                // 处理保存成功后的逻辑
+                console.log('Admin saved:', savedDocument);
+                return res.status(201).json({ status: '10000', message: 'Admin registered successfully' });
+            })
+            .catch(err => {
+                console.log(err)
+                return res.status(500).json({ status: '10099', message: 'Error registering user' });
+            });
+
+    }).catch(err => {
+        return res.status(500).json({ status: '10099', message: 'Internal Server Error' });
+    });
+});
+
 
 module.exports = router;

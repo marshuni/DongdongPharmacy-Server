@@ -12,12 +12,14 @@ const cartItemSchema = new Schema({
 const addressSchema = new Schema({
     location: { type: String, required: true },
     recipient: { type: String, required: true },
-    contact: { type: String, required: true }
+    contact: { type: String, required: true },
+    role: { type: String, required: true }
 });
 
 const userSchema = new Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    role: { type: String, required: true },
     cart: [cartItemSchema],
     address: [addressSchema]
 });
