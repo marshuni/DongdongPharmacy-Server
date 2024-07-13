@@ -30,6 +30,20 @@ router.get('/', async (req, res) => {
 
 // 药品管理部分
 // ===========================
+
+// 拦截普通用户的请求
+router.all('/*', function (req, res, next) {
+    if (req.user.role === 'admin') {
+        next();
+    } else {
+        res.status(403).json({
+            status: '10013',
+            message: '无访问权限！'
+        });
+    }
+});
+
+
 // 添加药品
 router.post('/manage', async (req, res) => {
     const name = req.body.name;
@@ -58,7 +72,8 @@ router.post('/manage', async (req, res) => {
                 console.log('Medcine saved:', savedDocument.name);
                 return res.status(201).json({
                     status: '10000',
-                    message: '药品添加成功'
+                    message: '药品添加成功',
+                    medicineId: savedDocument._id
                 });
             })
             .catch(err => {
@@ -71,15 +86,20 @@ router.post('/manage', async (req, res) => {
 
     }).catch(err => {
         return res.status(500).json({
-            status: '10099', 
-            message: '服务器内部错误' 
+            status: '10099',
+            message: '服务器内部错误'
         });
     });
 });
 
 // 上传图片接口
 router.post('/manage/image', upload.single('image'), async (req, res) => {
-    const { buffer, mimetype } = req.file;
+    if (!req.file)
+        return res.status(400).json({
+            status: '10022',
+            message: '上传文件为空，请检查请求内容'
+        });
+    const { buffer, mimetype } = req.file
     try {
         // medicineId参数用于传递药品ID
         const medicineId = req.body.medicineId;

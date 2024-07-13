@@ -17,6 +17,7 @@ const medicineSchema = new Schema({
   name: { type: String, required: true, unique: true },
   type: { type: String, required: true },
   price: { type: Number, required: true },
+  // 两种存图片方式都留着，第一种太卡了就用第二种
   picture: { type: imageSchema },
   picture_url: String,
   reviews: [reviewSchema]

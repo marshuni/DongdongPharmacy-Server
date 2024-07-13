@@ -54,6 +54,8 @@ app.all('/*', function (req, res, next) {
     // 登录 注册 浏览商品等操作无需登录
     if (req.originalUrl == '/auth/login' ||
       req.originalUrl == '/auth/register' ||
+      req.originalUrl == '/auth/admin' ||
+      req.originalUrl == '/auth/admin/register' ||
       req.originalUrl == '/medicine'
     ) {
       next();
