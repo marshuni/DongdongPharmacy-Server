@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Order, CartItem } = require('../models/order');  // 确保路径正确，这里假设订单和购物车项的模型在order.js文件中定义
+const { Order, CartItem } = require('../models/order');  
 const mongoose = require('mongoose');
 
 
