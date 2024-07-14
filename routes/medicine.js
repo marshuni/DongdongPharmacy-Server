@@ -12,7 +12,26 @@ const upload = multer({ storage: storage });
 // 获取药品列表
 router.get('/', async (req, res) => {
     try {
-        const medicine = await Medicine.find()
+        var medicine;
+        if (req.query.medicineId) {
+            const medicineId = req.query.medicineId;
+            medicine = await Medicine.findById(medicineId);
+            console.log(medicine)
+            if (!medicine) {
+                return res.status(404).json({
+                    status: '10023',
+                    message: '找不到对应的药品'
+                });
+            }
+        } else if (req.query.keyword) {
+            const keyword = req.query.keyword;
+            medicine = await Medicine.find({ name: { $regex: keyword, $options: 'i' } });
+        } else if (req.query.type) {
+            const type = req.query.type;
+            medicine = await Medicine.find({ type: { $regex: type, $options: 'i' } });
+        } else {
+            medicine = await Medicine.find()
+        }
         res.status(200).json({
             status: '10000',
             message: '请求成功',
@@ -27,12 +46,19 @@ router.get('/', async (req, res) => {
     }
 });
 
+// 获取单个药品信息
 
 // 药品管理部分
 // ===========================
 
 // 拦截普通用户的请求
 router.all('/*', function (req, res, next) {
+    if (!req.isAuthenticated()) {
+        res.status(401).json({
+            status: '10010',
+            message: '当前未登录',
+        });
+    };
     if (req.user.role === 'admin') {
         next();
     } else {
@@ -139,4 +165,56 @@ router.post('/manage/image', upload.single('image'), async (req, res) => {
     }
 });
 
+
+// 修改药品信息
+router.put('/manage', async (req, res) => {
+    try {
+        const updatedMedicine = {
+            name: req.body.name,
+            type: req.body.type,
+            price: req.body.price
+        };
+        const medicine = await Medicine.findByIdAndUpdate(req.body.medicine_id, updatedMedicine, { new: true });
+        
+        if (!medicine)
+            return res.status(404).json({
+                status: '10023',
+                message: '未找到该药品，请检查请求内容'
+            });
+        return res.status(200).json({
+            status: '10000',
+            message: '药品已成功更新',
+            medicine: medicine
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            status: '10099',
+            message: 'Internal Server Error'
+        });
+    }
+});
+
+// 删除药品
+router.delete('/manage', async (req, res) => {
+    try {
+        const medicine = await Medicine.findByIdAndDelete(req.query.medicineId);
+        console.log(req.query)
+        if (!medicine)
+            return res.status(404).json({
+                status: '10023',
+                message: '未找到该物品，请检查请求内容'
+            });
+        return res.status(200).json({
+            status: '10000',
+            message: '药品已成功删除'
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            status: '10099',
+            message: 'Internal Server Error'
+        });
+    }
+});
 module.exports = router;

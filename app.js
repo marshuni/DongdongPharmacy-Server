@@ -56,7 +56,7 @@ app.all('/*', function (req, res, next) {
       req.originalUrl == '/auth/register' ||
       req.originalUrl == '/auth/admin' ||
       req.originalUrl == '/auth/admin/register' ||
-      req.originalUrl == '/medicine'
+      req.originalUrl.startsWith('/medicine')
     ) {
       next();
     } else {
