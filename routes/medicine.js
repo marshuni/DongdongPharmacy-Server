@@ -165,8 +165,56 @@ router.post('/manage/image', upload.single('image'), async (req, res) => {
     }
 });
 
+
 // 修改药品信息
+router.put('/manage', async (req, res) => {
+    try {
+        const updatedMedicine = {
+            name: req.body.name,
+            type: req.body.type,
+            price: req.body.price
+        };
+        const medicine = await Medicine.findByIdAndUpdate(req.body.medicine_id, updatedMedicine, { new: true });
+        
+        if (!medicine)
+            return res.status(404).json({
+                status: '10023',
+                message: '未找到该药品，请检查请求内容'
+            });
+        return res.status(200).json({
+            status: '10000',
+            message: '药品已成功更新',
+            medicine: medicine
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            status: '10099',
+            message: 'Internal Server Error'
+        });
+    }
+});
 
 // 删除药品
-
+router.delete('/manage', async (req, res) => {
+    try {
+        const medicine = await Medicine.findByIdAndDelete(req.query.medicineId);
+        console.log(req.query)
+        if (!medicine)
+            return res.status(404).json({
+                status: '10023',
+                message: '未找到该物品，请检查请求内容'
+            });
+        return res.status(200).json({
+            status: '10000',
+            message: '药品已成功删除'
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            status: '10099',
+            message: 'Internal Server Error'
+        });
+    }
+});
 module.exports = router;
