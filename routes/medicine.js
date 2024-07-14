@@ -46,7 +46,28 @@ router.get('/', async (req, res) => {
     }
 });
 
-// 获取单个药品信息
+// 获取标签列表
+router.get('/typelist', async (req, res) => {
+    try {
+        const types = await Medicine.aggregate([
+            { $group: { _id: '$type' } },
+            { $project: { _id: 0, type: '$_id' } }
+        ]);
+        const typeList = types.map(type => type.type);
+        res.status(200).json({
+            status: '10000',
+            message: '请求成功',
+            typeList: typeList
+        });
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            status: '10099',
+            message: '内部服务器错误'
+        });
+    }
+});
 
 // 药品管理部分
 // ===========================
