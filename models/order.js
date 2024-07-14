@@ -10,6 +10,7 @@ const cartItemSchema = new Schema({
 const orderSchema = new Schema({
   userid: { type: Schema.Types.ObjectId, /* ref: 'User', */ required: true },
   username:{type:String, required:true},
+  recipient:{type:String, required:true},
   status: { type: String, default : "Pending", required: true },
   contact:{type:String, required:true},
   time: { type: Date, required: true },
