@@ -4,6 +4,7 @@ const { Order, CartItem } = require('../models/order');
 const mongoose = require('mongoose');
 
 
+
 // 创建新订单
 router.post('/create', async (req, res) => {
     try {
@@ -17,6 +18,9 @@ router.post('/create', async (req, res) => {
             amount: item.amount
         }));
 
+        const now = new Date();
+        const offset = 8 * 60;
+        const localDate = new Date(now.getTime() + offset * 60000);
         // 创建新订单
         const newOrder = new Order({
             userid: req.user.id,
@@ -24,7 +28,7 @@ router.post('/create', async (req, res) => {
             recipient:recipient,
             status:"Pending",
             contact:contact,
-            time: new Date(), 
+            time: localDate, 
             delivery: delivery,
             payment: payment,
             goods: cartItems
