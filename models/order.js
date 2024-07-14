@@ -11,6 +11,7 @@ const orderSchema = new Schema({
   userid: { type: Schema.Types.ObjectId, /* ref: 'User', */ required: true },
   username:{type:String, required:true},
   status: { type: String, default : "Pending", required: true },
+  contact:{type:String, required:true},
   time: { type: Date, required: true },
   delivery: { type: String, required: true },
   payment: { type: Number, required: true },
