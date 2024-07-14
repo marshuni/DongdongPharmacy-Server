@@ -13,7 +13,6 @@ const addressSchema = new Schema({
     location: { type: String, required: true },
     recipient: { type: String, required: true },
     contact: { type: String, required: true },
-    role: { type: String, required: true }
 });
 
 const userSchema = new Schema({
