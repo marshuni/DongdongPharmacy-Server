@@ -12,7 +12,26 @@ const upload = multer({ storage: storage });
 // 获取药品列表
 router.get('/', async (req, res) => {
     try {
-        const medicine = await Medicine.find()
+        var medicine;
+        if (req.query.medicineId) {
+            const medicineId = req.query.medicineId;
+            medicine = await Medicine.findById(medicineId);
+            console.log(medicine)
+            if (!medicine) {
+                return res.status(404).json({
+                    status: '10023',
+                    message: '找不到对应的药品'
+                });
+            }
+        } else if (req.query.keyword) {
+            const keyword = req.query.keyword;
+            medicine = await Medicine.find({ name: { $regex: keyword, $options: 'i' } });
+        } else if (req.query.type) {
+            const type = req.query.type;
+            medicine = await Medicine.find({ type: { $regex: type, $options: 'i' } });
+        } else {
+            medicine = await Medicine.find()
+        }
         res.status(200).json({
             status: '10000',
             message: '请求成功',
@@ -27,12 +46,19 @@ router.get('/', async (req, res) => {
     }
 });
 
+// 获取单个药品信息
 
 // 药品管理部分
 // ===========================
 
 // 拦截普通用户的请求
 router.all('/*', function (req, res, next) {
+    if (!req.isAuthenticated()) {
+        res.status(401).json({
+            status: '10010',
+            message: '当前未登录',
+        });
+    };
     if (req.user.role === 'admin') {
         next();
     } else {
@@ -138,5 +164,9 @@ router.post('/manage/image', upload.single('image'), async (req, res) => {
         });
     }
 });
+
+// 修改药品信息
+
+// 删除药品
 
 module.exports = router;
